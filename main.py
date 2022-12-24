@@ -34,11 +34,11 @@ def process_face_data(data):
 
 
 # visualization function
-def visualize(x_data, labels,title):
+def visualize(x_data, labels, title):
     plt.figure()
     plt.subplots_adjust(
-                        wspace=0.5,
-                        hspace=0.2)
+        wspace=0.5,
+        hspace=0.2)
 
     plt.suptitle(title)
     for i in range(12):
@@ -50,13 +50,17 @@ def visualize(x_data, labels,title):
 
 
 # accuracy change plot
-def accuracy_change(data,title):
-    x = list(data.keys())
-    y = list(data.values())
+def accuracy_change(data_manhattan,data_euclidean, title):
+    x = list(data_manhattan.keys())
+    y = list(data_manhattan.values())
+    x2 = list(data_euclidean.keys())
+    y2 = list(data_euclidean.values())
     plt.plot(x, y)
+    plt.plot(x2,y2)
     plt.xlabel("k")
     plt.ylabel("accuracy")
     plt.title(title)
+    plt.legend()
     plt.show()
 
 
@@ -65,7 +69,8 @@ def accuracy_change(data,title):
 # load digits dataset
 
 # load train digits data
-digits_training_data, y_digits_train = samples._test("digits", n_digits_training)
+digits_training_data, y_digits_train = samples._test("digits", "digitdata/trainingimages", "digitdata/traininglabels",
+                                                     n_digits_training)
 x_digits_train = []
 for i in range(n_digits_training):
     x_digits_train.append(digits_training_data[i].pixels)
@@ -73,7 +78,7 @@ for i in range(n_digits_training):
 XDigitsTrain = process_data(x_digits_train)
 
 # load test digits data
-digits_test_data, y_digits_test = samples._test("digits", n_digits_test)
+digits_test_data, y_digits_test = samples._test("digits", "digitdata/testimages", "digitdata/testlabels", n_digits_test)
 x_digits_test = []
 for i in range(n_digits_test):
     x_digits_test.append(digits_test_data[i].pixels)
@@ -81,7 +86,8 @@ for i in range(n_digits_test):
 XDigitsTest = process_data(x_digits_test)
 
 # load validation digits data
-digits_validation_data, y_digits_validation = samples._test("digits", n_digits_validation)
+digits_validation_data, y_digits_validation = samples._test("digits", "digitdata/validationimages",
+                                                            "digitdata/validationlabels", n_digits_validation)
 x_digits_validation = []
 for i in range(n_digits_validation):
     x_digits_validation.append(digits_validation_data[i].pixels)
@@ -93,15 +99,17 @@ XDigitsValidation = process_data(x_digits_validation)
 # load face data set
 
 # load train face data
-face_training_data, y_face_train = samples._test("face", n_face_training)
+face_training_data, y_face_train = samples._test("face", "facedata/facedatatrain", "facedata/facedatatrainlabels",
+                                                 n_face_training)
 x_face_train = []
 for i in range(n_face_training):
     x_face_train.append(face_training_data[i].pixels)
+
 faceTrain = process_face_data(x_face_train)
 XFaceTrain = process_data(faceTrain)
 
 # load test face data
-face_test_data, y_face_test = samples._test("face", n_face_test)
+face_test_data, y_face_test = samples._test("face", "facedata/facedatatest", "facedata/facedatatestlabels", n_face_test)
 x_face_test = []
 for i in range(n_face_test):
     x_face_test.append(face_test_data[i].pixels)
@@ -109,7 +117,8 @@ faceTest = process_face_data(x_face_test)
 XFaceTest = process_data(faceTest)
 
 # load validation face data
-face_validation_data, y_face_validation = samples._test("face", n_face_validation)
+face_validation_data, y_face_validation = samples._test("face", "facedata/facedatavalidation",
+                                                        "facedata/facedatavalidationlabels", n_face_validation)
 x_face_validation = []
 for i in range(n_face_validation):
     x_face_validation.append(face_validation_data[i].pixels)
@@ -129,11 +138,12 @@ NB_model_digits.fit(XDigitsTrain, y_digits_train)
 predicted_train_digits_naive = NB_model_digits.predict(XDigitsTrain)
 predicted_validation_digits_naive = NB_model_digits.predict(XDigitsValidation)
 predicted_test_digits_naive = NB_model_digits.predict(XDigitsTest)
-visualize(x_digits_test, predicted_test_digits_naive,"samples of digits test dataset with its prediction for naive bayes")
 print("the accuracy of the digits dataset for the naive bayes classifier is ")
 print(f"the training accuracy is {accuracy_score(y_digits_train, predicted_train_digits_naive) * 100} %")
 print(f"the validation accuracy is {accuracy_score(y_digits_validation, predicted_validation_digits_naive) * 100} %")
 print(f"the test accuracy is {accuracy_score(y_digits_test, predicted_test_digits_naive) * 100} %")
+visualize(x_digits_test, predicted_test_digits_naive,
+          "samples of digits test dataset with its prediction for naive bayes")
 print("------------------------------------------------------------------------")
 
 # fitting the face dataset to the naive classifier
@@ -142,40 +152,56 @@ NB_model_face.fit(XFaceTrain, y_face_train)
 predicted_train_face_naive = NB_model_face.predict(XFaceTrain)
 predicted_validation_face_naive = NB_model_face.predict(XFaceValidation)
 predicted_test_Face_naive = NB_model_face.predict(XFaceTest)
-visualize(faceTest, predicted_test_Face_naive,"samples of face test dataset with its prediction for naive bayes")
-print("the accuracy of the digits dataset for the naive bayes classifier is ")
+print("the accuracy of the face dataset for the naive bayes classifier is ")
 print(f"the training accuracy is {accuracy_score(y_face_train, predicted_train_face_naive) * 100} %")
 print(f"the validation accuracy is {accuracy_score(y_face_validation, predicted_validation_face_naive) * 100} %")
 print(f"the test accuracy is {accuracy_score(y_face_test, predicted_test_Face_naive) * 100} %")
+visualize(faceTest, predicted_test_Face_naive, "samples of face test dataset with its prediction for naive bayes")
 print("------------------------------------------------------------------------")
 
 # ------------------------------------------------------------------------------------#
 
-# building the KNN claseifier
-from sklearn.neighbors import KNeighborsClassifier
+# building the KNN classifier
+from sklearn.neighbors import KNeighborsClassifier, DistanceMetric
 
-best_digit_k = {}
-for i in range(2, 10):
-    KNN_digits = KNeighborsClassifier(n_neighbors=i)
-    KNN_digits.fit(XDigitsTrain, y_digits_train)
-    KNN_digits_train_accuracy = accuracy_score(y_digits_train, KNN_digits.predict(XDigitsTrain))
-    KNN_digits_validation_accuracy = accuracy_score(y_digits_validation, KNN_digits.predict(XDigitsValidation))
-    KNN_digits_test_accuracy = accuracy_score(y_digits_test, KNN_digits.predict(XDigitsTest))
-    best_digit_k[i] = KNN_digits_validation_accuracy
+manhattan_dist = DistanceMetric.get_metric("manhattan")
+euclidean_dist = DistanceMetric.get_metric("euclidean")
+distance_list = ['manhattan', 'euclidean']
 
-bestDK = max(best_digit_k, key=best_digit_k.get)
-accuracy_change(best_digit_k,"K vs validation accuracy for digit dataset")
+best_digit_manhattan_k = {}
+best_digit_euclidean_k = {}
+for dist in distance_list:
+    k = {}
+    for i in range(2, 10):
+        KNN_digits = KNeighborsClassifier(n_neighbors=i, metric=dist)
+        KNN_digits.fit(XDigitsTrain, y_digits_train)
+        KNN_digits_train_accuracy = accuracy_score(y_digits_train, KNN_digits.predict(XDigitsTrain))
+        KNN_digits_validation_accuracy = accuracy_score(y_digits_validation, KNN_digits.predict(XDigitsValidation))
+        KNN_digits_test_accuracy = accuracy_score(y_digits_test, KNN_digits.predict(XDigitsTest))
+        k[i] = KNN_digits_validation_accuracy
+        print(dist,i)
+
+    if dist == distance_list[0]:
+        best_digit_manhattan_k =k
+        print("A7")
+    else :
+        if dist == distance_list[1]:
+            best_digit_euclidean_k = k
+            print("A")
+
+bestDK = max(max(best_digit_manhattan_k, key=best_digit_manhattan_k.get),max(best_digit_euclidean_k, key=best_digit_euclidean_k.get))
+accuracy_change(best_digit_manhattan_k,best_digit_euclidean_k, "K vs validation accuracy for digit dataset")
 print(f"best k for digit data set is {bestDK}")
 KNN_digits = KNeighborsClassifier(n_neighbors=bestDK)
 KNN_digits.fit(XDigitsTrain, y_digits_train)
 KNN_digits_train_accuracy = accuracy_score(y_digits_train, KNN_digits.predict(XDigitsTrain))
 KNN_digits_validation_accuracy = accuracy_score(y_digits_validation, KNN_digits.predict(XDigitsValidation))
 KNN_digits_test_accuracy = accuracy_score(y_digits_test, KNN_digits.predict(XDigitsTest))
-visualize(x_digits_test, KNN_digits.predict(XDigitsTest),"samples of digits test dataset with its prediction for KNN")
 print(f"the accuracy of the digits dataset for k = {bestDK} for the KNN classifier is ")
 print(f"the training accuracy is {KNN_digits_train_accuracy * 100} %")
 print(f"the validation accuracy is {KNN_digits_validation_accuracy * 100} %")
 print(f"the test accuracy is {KNN_digits_test_accuracy * 100} %")
+visualize(x_digits_test, KNN_digits.predict(XDigitsTest), "samples of digits test dataset with its prediction for KNN")
 print("------------------------------------------------------------------------")
 
 # KNN for faces dataset
@@ -189,16 +215,16 @@ for i in range(2, 10):
     best_face_k[i] = KNN_face_validation_accuracy
 
 bestFK = max(best_face_k, key=best_face_k.get)
-accuracy_change(best_face_k,"K vs validation accuracy for face dataset")
+accuracy_change(best_face_k, "K vs validation accuracy for face dataset")
 print(f"best k for face data set is {bestFK}")
 KNN_face = KNeighborsClassifier(n_neighbors=bestFK)
 KNN_face.fit(XFaceTrain, y_face_train)
 KNN_face_train_accuracy = accuracy_score(y_face_train, KNN_face.predict(XFaceTrain))
 KNN_face_validation_accuracy = accuracy_score(y_face_validation, KNN_face.predict(XFaceValidation))
 KNN_face_test_accuracy = accuracy_score(y_face_test, KNN_face.predict(XFaceTest))
-visualize(faceTest, KNN_face.predict(XFaceTest),"samples of face test dataset with its prediction for KNN")
 print(f"the accuracy of the face dataset for k = {bestFK} for the KNN classifier is ")
 print(f"the training accuracy is {KNN_face_train_accuracy * 100} %")
 print(f"the validation accuracy is {KNN_face_validation_accuracy * 100} %")
 print(f"the test accuracy is {KNN_face_test_accuracy * 100} %")
+visualize(faceTest, KNN_face.predict(XFaceTest), "samples of face test dataset with its prediction for KNN")
 print("------------------------------------------------------------------------")

@@ -184,19 +184,19 @@ def convertToInteger(data):
 
 # Testing
 
-def _test(data,n=1):
+def _test(data,xpath,ypath,n=1):
     import doctest
     doctest.testmod()  # Test the interactive sessions in function comments
     # n = 1
     items =[]
     labels=[]
     if data == "digits":
-        items = loadDataFile("digitdata/trainingimages", n, 28, 28)
-        labels = loadLabelsFile("digitdata/traininglabels", n)
+        items = loadDataFile(xpath, n, 28, 28)
+        labels = loadLabelsFile(ypath, n)
     else:
         if data == "face":
-            items = loadDataFile("facedata/facedatatrain", n, 60, 70)
-            labels = loadLabelsFile("facedata/facedatatrainlabels", n)
+            items = loadDataFile(xpath, n, 60, 70)
+            labels = loadLabelsFile(ypath, n)
 
     # for i in range(1):
     #     print(items[i])
@@ -208,16 +208,16 @@ def _test(data,n=1):
     return items, labels
 
 
-if __name__ == "__main__":
-    items , labels = _test("digits",5000)
-    print(f"length of items is : {len(items)}")
-    # print(labels)
-    for i in range(len(items)):
-        # print(items[i])
-        # print(items[i])
-        # print(items[i].height)
-        # print(items[i].width)
-        # print(dir(items[i]))
-        # print(items[i].pixels)
-        # print(labels[i])
-        pass
+# if __name__ == "__main__":
+#     items , labels = _test("digits",5000)
+#     print(f"length of items is : {len(items)}")
+#     # print(labels)
+#     for i in range(len(items)):
+#         # print(items[i])
+#         # print(items[i])
+#         # print(items[i].height)
+#         # print(items[i].width)
+#         # print(dir(items[i]))
+#         # print(items[i].pixels)
+#         # print(labels[i])
+#         pass
