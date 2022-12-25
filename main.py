@@ -166,35 +166,6 @@ def Gaussian_Naive_Bayes_Face():
     print("------------------------------------------------------------------------")
 
 
-# fitting digits to multinomial naive bayes classifier
-def Multinomial_Naive_Bayes_Digits():
-    NB_model_digits = MultinomialNB()
-    NB_model_digits.fit(XDigitsTrain, y_digits_train)
-    predicted_train_digits_naive = NB_model_digits.predict(XDigitsTrain)
-    predicted_validation_digits_naive = NB_model_digits.predict(XDigitsValidation)
-    predicted_test_digits_naive = NB_model_digits.predict(XDigitsTest)
-    print("the accuracy of the digits dataset for the multinomial naive bayes classifier is ")
-    print(f"the training accuracy is {accuracy_score(y_digits_train, predicted_train_digits_naive) * 100} %")
-    print(
-        f"the validation accuracy is {accuracy_score(y_digits_validation, predicted_validation_digits_naive) * 100} %")
-    print(f"the test accuracy is {accuracy_score(y_digits_test, predicted_test_digits_naive) * 100} %")
-    visualize(x_digits_test, predicted_test_digits_naive,
-              "samples of digits test dataset with its prediction for multinomial naive bayes")
-    print("------------------------------------------------------------------------")
-
-# fitting digits to multinomial naive bayes classifier
-def Mulinomial_Naive_Bayes_Face():
-    NB_model_face = MultinomialNB()
-    NB_model_face.fit(XFaceTrain, y_face_train)
-    predicted_train_face_naive = NB_model_face.predict(XFaceTrain)
-    predicted_validation_face_naive = NB_model_face.predict(XFaceValidation)
-    predicted_test_Face_naive = NB_model_face.predict(XFaceTest)
-    print("the accuracy of the face dataset for the multinomial naive bayes classifier is ")
-    print(f"the training accuracy is {accuracy_score(y_face_train, predicted_train_face_naive) * 100} %")
-    print(f"the validation accuracy is {accuracy_score(y_face_validation, predicted_validation_face_naive) * 100} %")
-    print(f"the test accuracy is {accuracy_score(y_face_test, predicted_test_Face_naive) * 100} %")
-    visualize(faceTest, predicted_test_Face_naive, "samples of face test dataset with its prediction for multinomial naive bayes")
-    print("------------------------------------------------------------------------")
 
 # ------------------------------------------------------------------------------------#
 
@@ -212,9 +183,13 @@ def KNN_Digits():
         for i in range(2, 10):
             KNN_digits = KNeighborsClassifier(n_neighbors=i, p=dist)
             KNN_digits.fit(XDigitsTrain, y_digits_train)
-            KNN_digits_train_accuracy = accuracy_score(y_digits_train, KNN_digits.predict(XDigitsTrain))
             KNN_digits_validation_accuracy = accuracy_score(y_digits_validation, KNN_digits.predict(XDigitsValidation))
-            KNN_digits_test_accuracy = accuracy_score(y_digits_test, KNN_digits.predict(XDigitsTest))
+            if dist == distance_list[0]:
+                distance_name = "Manhattan"
+            else:
+                distance_name = "Euclidean"
+            print(f"the validation accuracy for k = {i} using {distance_name} distance")
+
             k[i] = KNN_digits_validation_accuracy
 
         if dist == distance_list[0]:
@@ -252,9 +227,12 @@ def KNN_Face():
         for i in range(2, 10):
             KNN_face = KNeighborsClassifier(n_neighbors=i, p=dis)
             KNN_face.fit(XFaceTrain, y_face_train)
-            KNN_face_train_accuracy = accuracy_score(y_face_train, KNN_face.predict(XFaceTrain))
             KNN_face_validation_accuracy = accuracy_score(y_face_validation, KNN_face.predict(XFaceValidation))
-            KNN_face_test_accuracy = accuracy_score(y_face_test, KNN_face.predict(XFaceTest))
+            if dis == distance_list[0]:
+                distance_name = "Manhattan"
+            else:
+                distance_name = "Euclidean"
+            print(f"the validation accuracy for k = {i} using {distance_name} distance")
             k[i] = KNN_face_validation_accuracy
         if dis == distance_list[0]:
             best_face_manhattan_k = k
@@ -280,6 +258,6 @@ def KNN_Face():
 
 if __name__ == "__main__":
     Gaussian_Naive_Bayes_Digits()
-    Multinomial_Naive_Bayes_Digits()
     Gaussian_Naive_Bayes_Face()
-    Multinomial_Naive_Bayes_Digits()
+    KNN_Digits()
+    KNN_Face()
