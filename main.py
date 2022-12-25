@@ -11,7 +11,6 @@ n_face_test = 150
 n_face_training = 451
 n_face_validation = 301
 
-#Alaa is here
 
 # helper function for data processing
 def process_data(data):
