@@ -55,8 +55,8 @@ def accuracy_change(data_manhattan,data_euclidean, title):
     y = list(data_manhattan.values())
     x2 = list(data_euclidean.keys())
     y2 = list(data_euclidean.values())
-    plt.plot(x, y)
-    plt.plot(x2,y2)
+    plt.plot(x, y,label ="manhattan")
+    plt.plot(x2,y2,label ="euclidean")
     plt.xlabel("k")
     plt.ylabel("accuracy")
     plt.title(title)
@@ -164,34 +164,31 @@ print("------------------------------------------------------------------------"
 # building the KNN classifier
 from sklearn.neighbors import KNeighborsClassifier, DistanceMetric
 
-manhattan_dist = DistanceMetric.get_metric("manhattan")
-euclidean_dist = DistanceMetric.get_metric("euclidean")
-distance_list = ['manhattan', 'euclidean']
-
+distance_list = [1,2]
+print("training the KNN classifier digit dataset, please wait.... it takes around 4 minutes")
 best_digit_manhattan_k = {}
 best_digit_euclidean_k = {}
 for dist in distance_list:
     k = {}
     for i in range(2, 10):
-        KNN_digits = KNeighborsClassifier(n_neighbors=i, metric=dist)
+        KNN_digits = KNeighborsClassifier(n_neighbors=i, p = dist)
         KNN_digits.fit(XDigitsTrain, y_digits_train)
         KNN_digits_train_accuracy = accuracy_score(y_digits_train, KNN_digits.predict(XDigitsTrain))
         KNN_digits_validation_accuracy = accuracy_score(y_digits_validation, KNN_digits.predict(XDigitsValidation))
         KNN_digits_test_accuracy = accuracy_score(y_digits_test, KNN_digits.predict(XDigitsTest))
         k[i] = KNN_digits_validation_accuracy
-        print(dist,i)
 
     if dist == distance_list[0]:
         best_digit_manhattan_k =k
-        print("A7")
     else :
         if dist == distance_list[1]:
             best_digit_euclidean_k = k
-            print("A")
 
-bestDK = max(max(best_digit_manhattan_k, key=best_digit_manhattan_k.get),max(best_digit_euclidean_k, key=best_digit_euclidean_k.get))
+bestDK = max(best_digit_euclidean_k, key=best_digit_euclidean_k.get)
 accuracy_change(best_digit_manhattan_k,best_digit_euclidean_k, "K vs validation accuracy for digit dataset")
-print(f"best k for digit data set is {bestDK}")
+
+# using euclidean distance with best k
+print(f"best k for digit data set is {bestDK} using eculidean distance")
 KNN_digits = KNeighborsClassifier(n_neighbors=bestDK)
 KNN_digits.fit(XDigitsTrain, y_digits_train)
 KNN_digits_train_accuracy = accuracy_score(y_digits_train, KNN_digits.predict(XDigitsTrain))
@@ -205,18 +202,27 @@ visualize(x_digits_test, KNN_digits.predict(XDigitsTest), "samples of digits tes
 print("------------------------------------------------------------------------")
 
 # KNN for faces dataset
-best_face_k = {}
-for i in range(2, 10):
-    KNN_face = KNeighborsClassifier(n_neighbors=i)
-    KNN_face.fit(XFaceTrain, y_face_train)
-    KNN_face_train_accuracy = accuracy_score(y_face_train, KNN_face.predict(XFaceTrain))
-    KNN_face_validation_accuracy = accuracy_score(y_face_validation, KNN_face.predict(XFaceValidation))
-    KNN_face_test_accuracy = accuracy_score(y_face_test, KNN_face.predict(XFaceTest))
-    best_face_k[i] = KNN_face_validation_accuracy
+print("training the KNN classifier face dataset, please wait.... it takes around 4 minutes")
+best_face_manhattan_k = {}
+best_face_euclidean_k = {}
+for dis in distance_list:
+    k = {}
+    for i in range(2, 10):
+        KNN_face = KNeighborsClassifier(n_neighbors=i,p=dis)
+        KNN_face.fit(XFaceTrain, y_face_train)
+        KNN_face_train_accuracy = accuracy_score(y_face_train, KNN_face.predict(XFaceTrain))
+        KNN_face_validation_accuracy = accuracy_score(y_face_validation, KNN_face.predict(XFaceValidation))
+        KNN_face_test_accuracy = accuracy_score(y_face_test, KNN_face.predict(XFaceTest))
+        k[i] = KNN_face_validation_accuracy
+    if dis == distance_list[0]:
+        best_face_manhattan_k =k
+    else :
+        if dis == distance_list[1]:
+            best_face_euclidean_k = k
 
-bestFK = max(best_face_k, key=best_face_k.get)
-accuracy_change(best_face_k, "K vs validation accuracy for face dataset")
-print(f"best k for face data set is {bestFK}")
+bestFK = max(best_face_euclidean_k, key=best_face_euclidean_k.get)
+accuracy_change(best_face_manhattan_k,best_face_euclidean_k, "K vs validation accuracy for face dataset")
+print(f"best k for face data set is {bestFK} using eculidean distance")
 KNN_face = KNeighborsClassifier(n_neighbors=bestFK)
 KNN_face.fit(XFaceTrain, y_face_train)
 KNN_face_train_accuracy = accuracy_score(y_face_train, KNN_face.predict(XFaceTrain))
