@@ -255,6 +255,19 @@ def KNN_Face():
     visualize(faceTest, KNN_face.predict(XFaceTest), "samples of face test dataset with its prediction for KNN")
     print("------------------------------------------------------------------------")
 
+# for training use :
+# XDigitsTrain, y_digits_train
+# XFaceTrain, y_face_train
+
+# for testing use :
+# XDigitsTest,y_digits_test
+# XFaceTest, y_face_test
+
+# for validation use :
+# XDigitsValidation, y_digits_validation
+# XFaceValidation, y_face_validation
+
+# start SVM or Decision tree or MLP here ....
 
 if __name__ == "__main__":
     Gaussian_Naive_Bayes_Digits()
