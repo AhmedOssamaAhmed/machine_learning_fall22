@@ -4,6 +4,7 @@ from matplotlib import pyplot as plt
 from sklearn.naive_bayes import GaussianNB, MultinomialNB, CategoricalNB, ComplementNB, BernoulliNB
 from sklearn.metrics import accuracy_score
 from sklearn.neighbors import KNeighborsClassifier, DistanceMetric
+from sklearn.tree import DecisionTreeClassifier
 
 # load datasets
 n_digits_test = 1000
@@ -47,7 +48,6 @@ def visualize(x_data, labels, title):
     for i in range(12):
         plt.subplot(3, 4, i + 1)
         plt.imshow(x_data[i]).axes.get_xaxis().set_visible(False)
-        # plt.axes.get_yaxis().set_visible(False)
         plt.title(labels[i])
     plt.show()
 
@@ -269,8 +269,70 @@ def KNN_Face():
 
 # start SVM or Decision tree or MLP here ....
 
+#Decision Tree for Digits dataset
+def DecisionTree_Digits():
+    for n in range(15,20):
+        min_samples_dict = {}
+        for i in range(2, 6):
+            DecisionTree_model = DecisionTreeClassifier(max_depth=n,min_samples_split=i,random_state = 0)
+            DecisionTree_model.fit(XDigitsTrain, y_digits_train)
+            DecisionTree_digits_validation_accuracy = accuracy_score(y_digits_validation,
+                                                                     DecisionTree_model.predict(XDigitsValidation))
+            min_samples_dict[i] = DecisionTree_digits_validation_accuracy
+            x = list(min_samples_dict.keys())
+            y = list(min_samples_dict.values())
+            plt.plot(x,y,label=f"max depth = {n}")
+    plt.legend()
+    plt.show()
+
+    DecisionTree_model = DecisionTreeClassifier(min_samples_split=3, max_depth=18, random_state=0)
+    DecisionTree_model.fit(XDigitsTrain, y_digits_train)
+    predicted_train_digit_decision_tree = DecisionTree_model.predict(XDigitsTrain)
+    predicted_validation_digit_decision_tree = DecisionTree_model.predict(XDigitsValidation)
+    predicted_test_digit_decision_tree = DecisionTree_model.predict(XDigitsTest)
+    print("the accuracy of the digits dataset for the decision tree is ")
+    print(f"the training accuracy is {accuracy_score(y_digits_train, predicted_train_digit_decision_tree) * 100} %")
+    print(
+        f"the validation accuracy is {accuracy_score(y_digits_validation, predicted_validation_digit_decision_tree) * 100} %")
+    print(f"the test accuracy is {accuracy_score(y_digits_test, predicted_test_digit_decision_tree) * 100} %")
+    # visualize(x_digits_test, predicted_test_digits_naive,
+    #           "samples of digits test dataset with its prediction for naive bayes")
+    print("------------------------------------------------------------------------")
+
+#Decision Tree for Faces dataset
+def DecisionTree_Face():
+    for n in range(8, 15):
+        min_samples_dict = {}
+        for i in range(2, 6):
+            DecisionTree_model = DecisionTreeClassifier(max_depth=n, min_samples_split=i, random_state=0)
+            DecisionTree_model.fit(XFaceTrain, y_face_train)
+            DecisionTree_face_validation_accuracy = accuracy_score(y_face_validation,
+                                                                     DecisionTree_model.predict(XFaceValidation))
+            min_samples_dict[i] = DecisionTree_face_validation_accuracy
+            x = list(min_samples_dict.keys())
+            y = list(min_samples_dict.values())
+            plt.plot(x, y, label=f"max depth = {n}")
+    plt.legend()
+    plt.show()
+
+    DecisionTree_model = DecisionTreeClassifier(min_samples_split=2, max_depth=12, random_state=0)
+    DecisionTree_model.fit(XFaceTrain, y_face_train)
+    predicted_train_face_decision_tree = DecisionTree_model.predict(XFaceTrain)
+    predicted_validation_face_decision_tree = DecisionTree_model.predict(XFaceValidation)
+    predicted_test_face_decision_tree = DecisionTree_model.predict(XFaceTest)
+    print("the accuracy of the face dataset for the decision tree is ")
+    print(f"the training accuracy is {accuracy_score(y_face_train, predicted_train_face_decision_tree) * 100} %")
+    print(
+        f"the validation accuracy is {accuracy_score(y_face_validation, predicted_validation_face_decision_tree) * 100} %")
+    print(f"the test accuracy is {accuracy_score(y_face_test, predicted_test_face_decision_tree) * 100} %")
+    # visualize(x_digits_test, predicted_test_digits_naive,
+    #           "samples of digits test dataset with its prediction for naive bayes")
+    print("------------------------------------------------------------------------")
+
 if __name__ == "__main__":
-    Gaussian_Naive_Bayes_Digits()
-    Gaussian_Naive_Bayes_Face()
-    KNN_Digits()
-    KNN_Face()
+    # Gaussian_Naive_Bayes_Digits()
+    # Gaussian_Naive_Bayes_Face()
+    # KNN_Digits()
+    # KNN_Face()
+    DecisionTree_Digits()
+    DecisionTree_Face()
