@@ -7,6 +7,7 @@ from sklearn.neighbors import KNeighborsClassifier, DistanceMetric
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.neural_network import MLPClassifier
 from sklearn.model_selection import GridSearchCV
+from sklearn.svm import SVC
 
 # load datasets
 n_digits_test = 1000
@@ -285,13 +286,13 @@ def DecisionTree_Digits():
     print(
         f"the validation accuracy is {accuracy_score(y_digits_validation, predicted_validation_digit_decision_tree) * 100} %")
     print(f"the test accuracy is {accuracy_score(y_digits_test, predicted_test_digit_decision_tree) * 100} %")
-    # visualize(x_digits_test, predicted_test_digits_naive,
-    #           "samples of digits test dataset with its prediction for naive bayes")
+    # visualize(x_digits_test, predicted_test_digit_decision_tree,
+    #           "samples of digits test dataset with its prediction for Decision Tree")
     print("------------------------------------------------------------------------")
 
 
 # Decision Tree for Faces dataset
-def DecisionTree_Face():
+def DecisionTree_Faces():
     for n in range(8, 15):
         min_samples_dict = {}
         for i in range(2, 6):
@@ -316,8 +317,8 @@ def DecisionTree_Face():
     print(
         f"the validation accuracy is {accuracy_score(y_face_validation, predicted_validation_face_decision_tree) * 100} %")
     print(f"the test accuracy is {accuracy_score(y_face_test, predicted_test_face_decision_tree) * 100} %")
-    # visualize(x_digits_test, predicted_test_digits_naive,
-    #           "samples of digits test dataset with its prediction for naive bayes")
+    # visualize(x_digits_test, predicted_test_face_decision_tree,
+    #           "samples of faces test dataset with its prediction for Decision Tree")
     print("------------------------------------------------------------------------")
 
 
@@ -368,12 +369,94 @@ def MLP_Digits():
     #lets finally tune the alpha and the initial
 
 
+kernel = ['linear', 'poly', 'rbf']
+gamma = ['auto', 'scale']
+
+# SVM for Digits dataset
+def SVM_Digits():
+    for k in kernel:
+        params = {}
+        for g in gamma:
+            SVM_model = SVC(kernel=k, gamma=g, degree=2)
+            SVM_model.fit(XDigitsTrain, y_digits_train)
+            SVM_digits_validation_accuracy = accuracy_score(y_digits_validation, SVM_model.predict(XDigitsValidation))
+            params[g] = SVM_digits_validation_accuracy
+            x = list(params.keys())
+            y = list(params.values())
+            plt.plot(x, y, label=f"Kernel = {k}")
+    plt.legend()
+    plt.show()
+
+    # detect the polynomial degree value that will give the highest accuracy
+    poly = {}
+    for degree in range(1,5):
+        SVM_model = SVC(kernel='poly', gamma='scale', degree=degree)
+        SVM_model.fit(XDigitsTrain, y_digits_train)
+        Poly_digits_validation_accuracy = accuracy_score(y_digits_validation, SVM_model.predict(XDigitsValidation))
+        poly[degree] = Poly_digits_validation_accuracy
+        x = list(poly.keys())
+        y = list(poly.values())
+        plt.plot(x, y)
+    plt.show()
+
+    SVM_model = SVC(kernel='poly', gamma='scale', degree=2)
+    SVM_model.fit(XDigitsTrain, y_digits_train)
+    predicted_train_digits_SVM = SVM_model.predict(XDigitsTrain)
+    predicted_validation_digits_SVM = SVM_model.predict(XDigitsValidation)
+    predicted_test_digits_SVM = SVM_model.predict(XDigitsTest)
+    print("the accuracy of the digits dataset for the SVM classifier is ")
+    print(f"the training accuracy is {accuracy_score(y_digits_train, predicted_train_digits_SVM) * 100} %")
+    print(f"the validation accuracy is {accuracy_score(y_digits_validation, predicted_validation_digits_SVM) * 100} %")
+    print(f"the test accuracy is {accuracy_score(y_digits_test, predicted_test_digits_SVM) * 100} %")
+    print("------------------------------------------------------------------------")
+
+# SVM for Faces dataset
+def SVM_Faces():
+    for k in kernel:
+        params = {}
+        for g in gamma:
+            SVM_model = SVC(kernel=k, gamma=g, degree=2)
+            SVM_model.fit(XFaceTrain, y_face_train)
+            SVM_faces_validation_accuracy = accuracy_score(y_face_validation, SVM_model.predict(XFaceValidation))
+            params[g] = SVM_faces_validation_accuracy
+            x = list(params.keys())
+            y = list(params.values())
+            plt.plot(x, y, label=f"Kernel = {k}")
+    plt.legend()
+    plt.show()
+
+    # detect the polynomial degree value that will give the highest accuracy
+    poly = {}
+    for degree in range(1,5):
+        SVM_model = SVC(kernel='poly', gamma='scale', degree=degree)
+        SVM_model.fit(XFaceTrain, y_face_train)
+        Poly_faces_validation_accuracy = accuracy_score(y_face_validation, SVM_model.predict(XFaceValidation))
+        poly[degree] = Poly_faces_validation_accuracy
+        x = list(poly.keys())
+        y = list(poly.values())
+        plt.plot(x, y)
+    plt.show()
+
+    SVM_model = SVC(kernel='poly', gamma='scale', degree=2)
+    SVM_model.fit(XFaceTrain, y_face_train)
+    predicted_train_faces_SVM = SVM_model.predict(XFaceTrain)
+    predicted_validation_faces_SVM = SVM_model.predict(XFaceValidation)
+    predicted_test_faces_SVM = SVM_model.predict(XFaceTest)
+    print("the accuracy of the faces dataset for the SVM classifier is ")
+    print(f"the training accuracy is {accuracy_score(y_face_train, predicted_train_faces_SVM) * 100} %")
+    print(f"the validation accuracy is {accuracy_score(y_face_validation, predicted_validation_faces_SVM) * 100} %")
+    print(f"the test accuracy is {accuracy_score(y_face_test, predicted_test_faces_SVM) * 100} %")
+    print("------------------------------------------------------------------------")
+
+
 if __name__ == "__main__":
     # Gaussian_Naive_Bayes_Digits()
     # Gaussian_Naive_Bayes_Face()
     # KNN_Digits()
     # KNN_Face()
     # DecisionTree_Digits()
-    # DecisionTree_Face()
+    # DecisionTree_Faces()
     # MLP_Digits()
+    # SVM_Digits()
+    # SVM_Faces()
     pass
