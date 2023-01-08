@@ -5,6 +5,8 @@ from sklearn.naive_bayes import GaussianNB, MultinomialNB, CategoricalNB, Comple
 from sklearn.metrics import accuracy_score
 from sklearn.neighbors import KNeighborsClassifier, DistanceMetric
 from sklearn.tree import DecisionTreeClassifier
+from sklearn.neural_network import MLPClassifier
+from sklearn.model_selection import GridSearchCV
 
 # load datasets
 n_digits_test = 1000
@@ -166,7 +168,6 @@ def Gaussian_Naive_Bayes_Face():
     print("------------------------------------------------------------------------")
 
 
-
 # ------------------------------------------------------------------------------------#
 
 # building the KNN classifier
@@ -188,7 +189,8 @@ def KNN_Digits():
                 distance_name = "Manhattan"
             else:
                 distance_name = "Euclidean"
-            print(f"the validation accuracy for k = {i} using {distance_name} distance")
+            print(
+                f"the validation accuracy for k = {i} using {distance_name} distance is {KNN_digits_validation_accuracy}")
 
             k[i] = KNN_digits_validation_accuracy
 
@@ -232,7 +234,8 @@ def KNN_Face():
                 distance_name = "Manhattan"
             else:
                 distance_name = "Euclidean"
-            print(f"the validation accuracy for k = {i} using {distance_name} distance")
+            print(
+                f"the validation accuracy for k = {i} using {distance_name} distance is {KNN_face_validation_accuracy}")
             k[i] = KNN_face_validation_accuracy
         if dis == distance_list[0]:
             best_face_manhattan_k = k
@@ -255,33 +258,20 @@ def KNN_Face():
     visualize(faceTest, KNN_face.predict(XFaceTest), "samples of face test dataset with its prediction for KNN")
     print("------------------------------------------------------------------------")
 
-# for training use :
-# XDigitsTrain, y_digits_train
-# XFaceTrain, y_face_train
 
-# for testing use :
-# XDigitsTest,y_digits_test
-# XFaceTest, y_face_test
-
-# for validation use :
-# XDigitsValidation, y_digits_validation
-# XFaceValidation, y_face_validation
-
-# start SVM or Decision tree or MLP here ....
-
-#Decision Tree for Digits dataset
+# Decision Tree for Digits dataset
 def DecisionTree_Digits():
-    for n in range(15,20):
+    for n in range(15, 20):
         min_samples_dict = {}
         for i in range(2, 6):
-            DecisionTree_model = DecisionTreeClassifier(max_depth=n,min_samples_split=i,random_state = 0)
+            DecisionTree_model = DecisionTreeClassifier(max_depth=n, min_samples_split=i, random_state=0)
             DecisionTree_model.fit(XDigitsTrain, y_digits_train)
             DecisionTree_digits_validation_accuracy = accuracy_score(y_digits_validation,
                                                                      DecisionTree_model.predict(XDigitsValidation))
             min_samples_dict[i] = DecisionTree_digits_validation_accuracy
             x = list(min_samples_dict.keys())
             y = list(min_samples_dict.values())
-            plt.plot(x,y,label=f"max depth = {n}")
+            plt.plot(x, y, label=f"max depth = {n}")
     plt.legend()
     plt.show()
 
@@ -299,7 +289,8 @@ def DecisionTree_Digits():
     #           "samples of digits test dataset with its prediction for naive bayes")
     print("------------------------------------------------------------------------")
 
-#Decision Tree for Faces dataset
+
+# Decision Tree for Faces dataset
 def DecisionTree_Face():
     for n in range(8, 15):
         min_samples_dict = {}
@@ -307,7 +298,7 @@ def DecisionTree_Face():
             DecisionTree_model = DecisionTreeClassifier(max_depth=n, min_samples_split=i, random_state=0)
             DecisionTree_model.fit(XFaceTrain, y_face_train)
             DecisionTree_face_validation_accuracy = accuracy_score(y_face_validation,
-                                                                     DecisionTree_model.predict(XFaceValidation))
+                                                                   DecisionTree_model.predict(XFaceValidation))
             min_samples_dict[i] = DecisionTree_face_validation_accuracy
             x = list(min_samples_dict.keys())
             y = list(min_samples_dict.values())
@@ -329,10 +320,60 @@ def DecisionTree_Face():
     #           "samples of digits test dataset with its prediction for naive bayes")
     print("------------------------------------------------------------------------")
 
+
+# MLP Digits
+def MLP_Digits():
+    # params = {
+    #     # 'hidden_layer_sizes': [(100,), (10,)],
+    #     'activation': ['relu', 'identity', 'logistic', 'tanh'],
+    #     'solver': ['lbfgs', 'sgd', 'adam'],
+    #     # 'alpha': [0.0001],
+    #     'learning_rate': ['constant', 'invscaling', 'adaptive'],
+    #     # 'learning_rate_init': [0.001],
+    # }
+    # grid_search = GridSearchCV(
+    #     MLPClassifier(verbose=True),
+    #     param_grid=params,
+    #     return_train_score=True,
+    #     verbose=True,
+    #     n_jobs=-1
+    # )
+    # grid_search.fit(XDigitsTrain, y_digits_train)
+    # print(grid_search.best_params_)
+    # the best params are {'activation': 'relu', 'learning_rate': 'adaptive', 'solver': 'adam'}
+    # now lets try changing the hidden_layer_sizes and display the accuracy change using the above parameters
+    accuracy = {}
+    for i in range(50,1000, 50):
+        mlp_digits = MLPClassifier(
+            hidden_layer_sizes=(i,),
+            activation='relu',
+            solver='adam',
+            learning_rate='adaptive',
+            verbose=False)
+        print(i)
+        mlp_digits.fit(XDigitsTrain,y_digits_train)
+        mlp_digits_training_accuracy = accuracy_score(y_digits_train,mlp_digits.predict(XDigitsTrain))
+        print(f"training accuracy for MPL for digits dataset is {mlp_digits_training_accuracy*100}%")
+        mlp_digits_validation_accuracy = accuracy_score(y_digits_validation,mlp_digits.predict(XDigitsValidation))
+        print(f"validation accuracy for MPL for digits dataset is {mlp_digits_validation_accuracy*100}%")
+        mlp_digits_test_accuracy = accuracy_score(y_digits_test,mlp_digits.predict(XDigitsTest))
+        print(f"training accuracy for MPL for digits dataset is {mlp_digits_test_accuracy*100}%")
+        accuracy[i] = mlp_digits_validation_accuracy
+        x = list(accuracy.keys())
+        y = list(accuracy.values())
+        plt.plot(x, y, label=f"layers = {i}")
+    plt.legend()
+    plt.show()
+    # so we can see the best hidden layers sizes is 350
+    #lets finally tune the alpha and the initial
+
+
 if __name__ == "__main__":
     # Gaussian_Naive_Bayes_Digits()
     # Gaussian_Naive_Bayes_Face()
     # KNN_Digits()
     # KNN_Face()
-    DecisionTree_Digits()
-    DecisionTree_Face()
+    # DecisionTree_Digits()
+    # DecisionTree_Face()
+    # MLP_Digits()
+    pass
