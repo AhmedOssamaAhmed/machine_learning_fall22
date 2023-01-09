@@ -262,6 +262,7 @@ def KNN_Face():
 
 # Decision Tree for Digits dataset
 def DecisionTree_Digits():
+    print("Tuning the hyperparameters...... please wait")
     for n in range(15, 20):
         min_samples_dict = {}
         for i in range(2, 6):
@@ -273,6 +274,9 @@ def DecisionTree_Digits():
             x = list(min_samples_dict.keys())
             y = list(min_samples_dict.values())
             plt.plot(x, y, label=f"max depth = {n}")
+    plt.title("max depth vs min sample split")
+    plt.xlabel("min samples split")
+    plt.ylabel("validation accuracy")
     plt.legend()
     plt.show()
 
@@ -286,13 +290,14 @@ def DecisionTree_Digits():
     print(
         f"the validation accuracy is {accuracy_score(y_digits_validation, predicted_validation_digit_decision_tree) * 100} %")
     print(f"the test accuracy is {accuracy_score(y_digits_test, predicted_test_digit_decision_tree) * 100} %")
-    # visualize(x_digits_test, predicted_test_digit_decision_tree,
-    #           "samples of digits test dataset with its prediction for Decision Tree")
     print("------------------------------------------------------------------------")
+    visualize(x_digits_test, predicted_test_digit_decision_tree,
+              "samples of digits test dataset with its prediction for Decision Tree")
 
 
 # Decision Tree for Faces dataset
 def DecisionTree_Faces():
+    print("Tuning the hyperparameters...... please wait")
     for n in range(8, 15):
         min_samples_dict = {}
         for i in range(2, 6):
@@ -304,6 +309,9 @@ def DecisionTree_Faces():
             x = list(min_samples_dict.keys())
             y = list(min_samples_dict.values())
             plt.plot(x, y, label=f"max depth = {n}")
+    plt.title("max depth vs min sample split")
+    plt.xlabel("min samples split")
+    plt.ylabel("validation accuracy")
     plt.legend()
     plt.show()
 
@@ -317,15 +325,14 @@ def DecisionTree_Faces():
     print(
         f"the validation accuracy is {accuracy_score(y_face_validation, predicted_validation_face_decision_tree) * 100} %")
     print(f"the test accuracy is {accuracy_score(y_face_test, predicted_test_face_decision_tree) * 100} %")
-    # visualize(x_digits_test, predicted_test_face_decision_tree,
-    #           "samples of faces test dataset with its prediction for Decision Tree")
     print("------------------------------------------------------------------------")
+    visualize(faceTest, predicted_test_face_decision_tree,
+              "samples of faces test dataset with its prediction for Decision Tree")
 
 
 # MLP Digits
 def MLP_Digits():
     # params = {
-    #     # 'hidden_layer_sizes': [(100,), (10,)],
     #     'activation': ['relu', 'identity', 'logistic', 'tanh'],
     #     'solver': ['lbfgs', 'sgd', 'adam'],
     #     'learning_rate': ['constant', 'invscaling', 'adaptive'],
@@ -411,14 +418,15 @@ def MLP_Digits():
                 verbose=False)
     mlp_digits.fit(XDigitsTrain,y_digits_train)
     mlp_digits_training_accuracy = accuracy_score(y_digits_train,mlp_digits.predict(XDigitsTrain))
-    print(f"training accuracy for MPL for digits dataset is {mlp_digits_training_accuracy*100}%")
+    print(f"training accuracy for MLP for digits dataset is {mlp_digits_training_accuracy*100}%")
     mlp_digits_validation_accuracy = accuracy_score(y_digits_validation,mlp_digits.predict(XDigitsValidation))
-    print(f"validation accuracy for MPL for digits dataset is {mlp_digits_validation_accuracy*100}%")
+    print(f"validation accuracy for MLP for digits dataset is {mlp_digits_validation_accuracy*100}%")
     mlp_digits_test_accuracy = accuracy_score(y_digits_test,mlp_digits.predict(XDigitsTest))
-    print(f"training accuracy for MPL for digits dataset is {mlp_digits_test_accuracy*100}%")
+    print(f"training accuracy for MLP for digits dataset is {mlp_digits_test_accuracy*100}%")
     predicted =mlp_digits.predict(XDigitsTest)
     visualize(x_digits_test, predicted,
-              "samples of digits test dataset with its prediction for naive bayes")
+              "samples of digits test dataset with its prediction for MLP")
+    print("------------------------------------------------------------------------")
 
 # MLP Faces
 def MLP_Faces():
@@ -507,14 +515,15 @@ def MLP_Faces():
                 verbose=False)
     mlp_face.fit(XFaceTrain,y_face_train)
     mlp_face_training_accuracy = accuracy_score(y_face_train,mlp_face.predict(XFaceTrain))
-    print(f"training accuracy for MPL for face dataset is {mlp_face_training_accuracy*100}%")
+    print(f"training accuracy for MLP for face dataset is {mlp_face_training_accuracy*100}%")
     mlp_face_validation_accuracy = accuracy_score(y_face_validation,mlp_face.predict(XFaceValidation))
-    print(f"validation accuracy for MPL for face dataset is {mlp_face_validation_accuracy*100}%")
+    print(f"validation accuracy for MLP for face dataset is {mlp_face_validation_accuracy*100}%")
     mlp_face_test_accuracy = accuracy_score(y_face_test,mlp_face.predict(XFaceTest))
-    print(f"training accuracy for MPL for face dataset is {mlp_face_test_accuracy*100}%")
+    print(f"training accuracy for MLP for face dataset is {mlp_face_test_accuracy*100}%")
     predicted =mlp_face.predict(XFaceTest)
-    visualize(x_digits_test, predicted,
-              "samples of face test dataset with its prediction for naive bayes")
+    visualize(faceTest, predicted,
+              "samples of face test dataset with its prediction for MLP")
+    print("------------------------------------------------------------------------")
 
 
 kernel = ['linear', 'poly', 'rbf']
@@ -522,6 +531,7 @@ gamma = ['auto', 'scale']
 
 # SVM for Digits dataset
 def SVM_Digits():
+    print("Tuning the hyperparameters...... please wait")
     for k in kernel:
         params = {}
         for g in gamma:
@@ -532,6 +542,9 @@ def SVM_Digits():
             x = list(params.keys())
             y = list(params.values())
             plt.plot(x, y, label=f"Kernel = {k}")
+    plt.title("kernel vs gamma")
+    plt.xlabel("gamma")
+    plt.ylabel("validation accuracy")
     plt.legend()
     plt.show()
 
@@ -545,6 +558,9 @@ def SVM_Digits():
         x = list(poly.keys())
         y = list(poly.values())
         plt.plot(x, y)
+    plt.title("different degrees of polynomial")
+    plt.xlabel("degree of polynomial")
+    plt.ylabel("validation accuracy")
     plt.show()
 
     SVM_model = SVC(kernel='poly', gamma='scale', degree=2)
@@ -557,9 +573,12 @@ def SVM_Digits():
     print(f"the validation accuracy is {accuracy_score(y_digits_validation, predicted_validation_digits_SVM) * 100} %")
     print(f"the test accuracy is {accuracy_score(y_digits_test, predicted_test_digits_SVM) * 100} %")
     print("------------------------------------------------------------------------")
+    visualize(x_digits_test, predicted_test_digits_SVM,
+              "samples of digits test dataset with its prediction for SVM")
 
 # SVM for Faces dataset
 def SVM_Faces():
+    print("Tuning the hyperparameters...... please wait")
     for k in kernel:
         params = {}
         for g in gamma:
@@ -570,6 +589,9 @@ def SVM_Faces():
             x = list(params.keys())
             y = list(params.values())
             plt.plot(x, y, label=f"Kernel = {k}")
+    plt.title("kernel vs gamma")
+    plt.xlabel("gamma")
+    plt.ylabel("validation accuracy")
     plt.legend()
     plt.show()
 
@@ -583,6 +605,9 @@ def SVM_Faces():
         x = list(poly.keys())
         y = list(poly.values())
         plt.plot(x, y)
+    plt.title("different degrees of polynomial")
+    plt.xlabel("degree of polynomial")
+    plt.ylabel("validation accuracy")
     plt.show()
 
     SVM_model = SVC(kernel='poly', gamma='scale', degree=2)
@@ -595,6 +620,8 @@ def SVM_Faces():
     print(f"the validation accuracy is {accuracy_score(y_face_validation, predicted_validation_faces_SVM) * 100} %")
     print(f"the test accuracy is {accuracy_score(y_face_test, predicted_test_faces_SVM) * 100} %")
     print("------------------------------------------------------------------------")
+    visualize(faceTest, predicted_test_faces_SVM,
+              "samples of faces test dataset with its prediction for svm")
 
 
 if __name__ == "__main__":
@@ -602,10 +629,9 @@ if __name__ == "__main__":
     # Gaussian_Naive_Bayes_Face()
     # KNN_Digits()
     # KNN_Face()
-    # DecisionTree_Digits()
-    # DecisionTree_Faces()
-    # MLP_Digits()
+    DecisionTree_Digits()
+    DecisionTree_Faces()
+    MLP_Digits()
     MLP_Faces()
-    # SVM_Digits()
-    # SVM_Faces()
-    # pass
+    SVM_Digits()
+    SVM_Faces()
