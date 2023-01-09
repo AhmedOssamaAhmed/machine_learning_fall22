@@ -328,9 +328,7 @@ def MLP_Digits():
     #     # 'hidden_layer_sizes': [(100,), (10,)],
     #     'activation': ['relu', 'identity', 'logistic', 'tanh'],
     #     'solver': ['lbfgs', 'sgd', 'adam'],
-    #     # 'alpha': [0.0001],
     #     'learning_rate': ['constant', 'invscaling', 'adaptive'],
-    #     # 'learning_rate_init': [0.001],
     # }
     # grid_search = GridSearchCV(
     #     MLPClassifier(verbose=True),
@@ -341,32 +339,184 @@ def MLP_Digits():
     # )
     # grid_search.fit(XDigitsTrain, y_digits_train)
     # print(grid_search.best_params_)
+
     # the best params are {'activation': 'relu', 'learning_rate': 'adaptive', 'solver': 'adam'}
     # now lets try changing the hidden_layer_sizes and display the accuracy change using the above parameters
-    accuracy = {}
-    for i in range(50,1000, 50):
-        mlp_digits = MLPClassifier(
-            hidden_layer_sizes=(i,),
-            activation='relu',
-            solver='adam',
-            learning_rate='adaptive',
-            verbose=False)
-        print(i)
-        mlp_digits.fit(XDigitsTrain,y_digits_train)
-        mlp_digits_training_accuracy = accuracy_score(y_digits_train,mlp_digits.predict(XDigitsTrain))
-        print(f"training accuracy for MPL for digits dataset is {mlp_digits_training_accuracy*100}%")
-        mlp_digits_validation_accuracy = accuracy_score(y_digits_validation,mlp_digits.predict(XDigitsValidation))
-        print(f"validation accuracy for MPL for digits dataset is {mlp_digits_validation_accuracy*100}%")
-        mlp_digits_test_accuracy = accuracy_score(y_digits_test,mlp_digits.predict(XDigitsTest))
-        print(f"training accuracy for MPL for digits dataset is {mlp_digits_test_accuracy*100}%")
-        accuracy[i] = mlp_digits_validation_accuracy
-        x = list(accuracy.keys())
-        y = list(accuracy.values())
-        plt.plot(x, y, label=f"layers = {i}")
-    plt.legend()
-    plt.show()
+
+    # accuracy = {}
+    # for i in range(50,1000, 50):
+    #     mlp_digits = MLPClassifier(
+    #         hidden_layer_sizes=(i,),
+    #         activation='relu',
+    #         solver='adam',
+    #         learning_rate='adaptive',
+    #         verbose=False)
+    #     print(i)
+    #     mlp_digits.fit(XDigitsTrain,y_digits_train)
+    #     mlp_digits_training_accuracy = accuracy_score(y_digits_train,mlp_digits.predict(XDigitsTrain))
+    #     print(f"training accuracy for MPL for digits dataset is {mlp_digits_training_accuracy*100}%")
+    #     mlp_digits_validation_accuracy = accuracy_score(y_digits_validation,mlp_digits.predict(XDigitsValidation))
+    #     print(f"validation accuracy for MPL for digits dataset is {mlp_digits_validation_accuracy*100}%")
+    #     mlp_digits_test_accuracy = accuracy_score(y_digits_test,mlp_digits.predict(XDigitsTest))
+    #     print(f"training accuracy for MPL for digits dataset is {mlp_digits_test_accuracy*100}%")
+    #     accuracy[i] = mlp_digits_validation_accuracy
+    #     x = list(accuracy.keys())
+    #     y = list(accuracy.values())
+    #     plt.plot(x, y, label=f"layers = {i}")
+    # plt.legend()
+    # plt.show()
+
     # so we can see the best hidden layers sizes is 350
+
     #lets finally tune the alpha and the initial
+    # alpha = [0.0001,0.001,0.01,0.1]
+    # learning_rate_init =[0.0001,0.001,0.01,0.1]
+    # for i in alpha:
+    #     accuracy = {}
+    #     for j in learning_rate_init:
+    #         mlp_digits = MLPClassifier(
+    #             hidden_layer_sizes=(350,),
+    #             activation='relu',
+    #             solver='adam',
+    #             learning_rate='adaptive',
+    #             alpha=i,
+    #             learning_rate_init=j,
+    #             verbose=True)
+    #         print(i,j)
+    #         mlp_digits.fit(XDigitsTrain, y_digits_train)
+    #         mlp_digits_training_accuracy = accuracy_score(y_digits_train, mlp_digits.predict(XDigitsTrain))
+    #         print(f"training accuracy for MPL for digits dataset is {mlp_digits_training_accuracy * 100}%")
+    #         mlp_digits_validation_accuracy = accuracy_score(y_digits_validation,
+    #                                                         mlp_digits.predict(XDigitsValidation))
+    #         print(f"validation accuracy for MPL for digits dataset is {mlp_digits_validation_accuracy * 100}%")
+    #         mlp_digits_test_accuracy = accuracy_score(y_digits_test, mlp_digits.predict(XDigitsTest))
+    #         print(f"training accuracy for MPL for digits dataset is {mlp_digits_test_accuracy * 100}%")
+    #         accuracy[j] = mlp_digits_validation_accuracy
+    #     x = list(accuracy.keys())
+    #     y = list(accuracy.values())
+    #     plt.plot(x, y, label=f"alpha {i} ")
+    # plt.legend()
+    # plt.show()
+
+    # the best alpha is 0.001 with learning init of 0.01
+
+    # so the final model is as the following
+    mlp_digits = MLPClassifier(
+                hidden_layer_sizes=(350,),
+                activation='relu',
+                solver='adam',
+                learning_rate='adaptive',
+                learning_rate_init=0.01,
+                alpha=0.001,
+                verbose=False)
+    mlp_digits.fit(XDigitsTrain,y_digits_train)
+    mlp_digits_training_accuracy = accuracy_score(y_digits_train,mlp_digits.predict(XDigitsTrain))
+    print(f"training accuracy for MPL for digits dataset is {mlp_digits_training_accuracy*100}%")
+    mlp_digits_validation_accuracy = accuracy_score(y_digits_validation,mlp_digits.predict(XDigitsValidation))
+    print(f"validation accuracy for MPL for digits dataset is {mlp_digits_validation_accuracy*100}%")
+    mlp_digits_test_accuracy = accuracy_score(y_digits_test,mlp_digits.predict(XDigitsTest))
+    print(f"training accuracy for MPL for digits dataset is {mlp_digits_test_accuracy*100}%")
+    predicted =mlp_digits.predict(XDigitsTest)
+    visualize(x_digits_test, predicted,
+              "samples of digits test dataset with its prediction for naive bayes")
+
+# MLP Faces
+def MLP_Faces():
+    # params = {
+    #     # 'hidden_layer_sizes': [(100,), (10,)],
+    #     'activation': ['relu', 'identity', 'logistic', 'tanh'],
+    #     'solver': ['lbfgs', 'sgd', 'adam'],
+    #     'learning_rate': ['constant', 'invscaling', 'adaptive'],
+    # }
+    # grid_search = GridSearchCV(
+    #     MLPClassifier(verbose=True),
+    #     param_grid=params,
+    #     return_train_score=True,
+    #     verbose=True,
+    #     n_jobs=-1
+    # )
+    # grid_search.fit(XDigitsTrain, y_digits_train)
+    # print(grid_search.best_params_)
+
+    # the best params are {'activation': 'relu', 'learning_rate': 'adaptive', 'solver': 'adam'}
+    # now lets try changing the hidden_layer_sizes and display the accuracy change using the above parameters
+
+    # accuracy = {}
+    # for i in range(50,1000, 50):
+    #     mlp_digits = MLPClassifier(
+    #         hidden_layer_sizes=(i,),
+    #         activation='relu',
+    #         solver='adam',
+    #         learning_rate='adaptive',
+    #         verbose=False)
+    #     print(i)
+    #     mlp_digits.fit(XDigitsTrain,y_digits_train)
+    #     mlp_digits_training_accuracy = accuracy_score(y_digits_train,mlp_digits.predict(XDigitsTrain))
+    #     print(f"training accuracy for MPL for digits dataset is {mlp_digits_training_accuracy*100}%")
+    #     mlp_digits_validation_accuracy = accuracy_score(y_digits_validation,mlp_digits.predict(XDigitsValidation))
+    #     print(f"validation accuracy for MPL for digits dataset is {mlp_digits_validation_accuracy*100}%")
+    #     mlp_digits_test_accuracy = accuracy_score(y_digits_test,mlp_digits.predict(XDigitsTest))
+    #     print(f"training accuracy for MPL for digits dataset is {mlp_digits_test_accuracy*100}%")
+    #     accuracy[i] = mlp_digits_validation_accuracy
+    #     x = list(accuracy.keys())
+    #     y = list(accuracy.values())
+    #     plt.plot(x, y, label=f"layers = {i}")
+    # plt.legend()
+    # plt.show()
+
+    # so we can see the best hidden layers sizes is 350
+
+    #lets finally tune the alpha and the initial
+    # alpha = [0.0001,0.001,0.01,0.1]
+    # learning_rate_init =[0.0001,0.001,0.01,0.1]
+    # for i in alpha:
+    #     accuracy = {}
+    #     for j in learning_rate_init:
+    #         mlp_digits = MLPClassifier(
+    #             hidden_layer_sizes=(350,),
+    #             activation='relu',
+    #             solver='adam',
+    #             learning_rate='adaptive',
+    #             alpha=i,
+    #             learning_rate_init=j,
+    #             verbose=True)
+    #         print(i,j)
+    #         mlp_digits.fit(XDigitsTrain, y_digits_train)
+    #         mlp_digits_training_accuracy = accuracy_score(y_digits_train, mlp_digits.predict(XDigitsTrain))
+    #         print(f"training accuracy for MPL for digits dataset is {mlp_digits_training_accuracy * 100}%")
+    #         mlp_digits_validation_accuracy = accuracy_score(y_digits_validation,
+    #                                                         mlp_digits.predict(XDigitsValidation))
+    #         print(f"validation accuracy for MPL for digits dataset is {mlp_digits_validation_accuracy * 100}%")
+    #         mlp_digits_test_accuracy = accuracy_score(y_digits_test, mlp_digits.predict(XDigitsTest))
+    #         print(f"training accuracy for MPL for digits dataset is {mlp_digits_test_accuracy * 100}%")
+    #         accuracy[j] = mlp_digits_validation_accuracy
+    #     x = list(accuracy.keys())
+    #     y = list(accuracy.values())
+    #     plt.plot(x, y, label=f"alpha {i} ")
+    # plt.legend()
+    # plt.show()
+
+    # the best alpha is 0.001 with learning init of 0.01
+
+    # so the final model is as the following
+    mlp_digits = MLPClassifier(
+                hidden_layer_sizes=(350,),
+                activation='relu',
+                solver='adam',
+                learning_rate='adaptive',
+                learning_rate_init=0.01,
+                alpha=0.001,
+                verbose=False)
+    mlp_digits.fit(XDigitsTrain,y_digits_train)
+    mlp_digits_training_accuracy = accuracy_score(y_digits_train,mlp_digits.predict(XDigitsTrain))
+    print(f"training accuracy for MPL for digits dataset is {mlp_digits_training_accuracy*100}%")
+    mlp_digits_validation_accuracy = accuracy_score(y_digits_validation,mlp_digits.predict(XDigitsValidation))
+    print(f"validation accuracy for MPL for digits dataset is {mlp_digits_validation_accuracy*100}%")
+    mlp_digits_test_accuracy = accuracy_score(y_digits_test,mlp_digits.predict(XDigitsTest))
+    print(f"training accuracy for MPL for digits dataset is {mlp_digits_test_accuracy*100}%")
+    predicted =mlp_digits.predict(XDigitsTest)
+    visualize(x_digits_test, predicted,
+              "samples of digits test dataset with its prediction for naive bayes")
 
 
 kernel = ['linear', 'poly', 'rbf']
@@ -456,7 +606,7 @@ if __name__ == "__main__":
     # KNN_Face()
     # DecisionTree_Digits()
     # DecisionTree_Faces()
-    # MLP_Digits()
+    MLP_Digits()
     # SVM_Digits()
     # SVM_Faces()
-    pass
+    # pass
